@@ -3,7 +3,6 @@ import { z } from "zod";
 const userRegistionSchemaValidation = z.object({
     username: z.string()
         .trim()
-        .lowercase()
         .min(3, "Username must be 3 character long")
         .max(20, "Too long username"),
 
@@ -22,3 +21,8 @@ const userRegistionSchemaValidation = z.object({
         .regex(/[0-9]/, "Must contain a digit")
 
 });
+
+
+export {
+    userRegistionSchemaValidation
+}
