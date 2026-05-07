@@ -1,13 +1,10 @@
-import "dotenv/config";
-import express from "express";
-import userRoutes from "./Routes/users.routes.js";
+import app from "./app.js";
 import { connectDB } from "./DB/db.connection.js";
-const app = express();
+import "dotenv/config";
 const PORT = process.env.PORT || 8000;
 
 
-app.use("/api/v1/users", userRoutes);
-
+// db connection then starting server
 connectDB()
     .then(() => {
         app.listen(PORT, () => {
