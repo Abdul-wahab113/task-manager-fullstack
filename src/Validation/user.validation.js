@@ -22,7 +22,18 @@ const userRegistionSchemaValidation = z.object({
 
 });
 
+export const userLoginSchemaValidation = z.object({
+    email: z.string()
+        .trim()
+        .lowercase()
+        .email("Invalid email format"),
+    password: z.string()
+        .min(1, "Password is required")
+});
+
+
 
 export {
-    userRegistionSchemaValidation
+    userRegistionSchemaValidation,
+    userLoginSchemaValidation
 }
