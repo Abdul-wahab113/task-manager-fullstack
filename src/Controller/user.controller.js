@@ -1,6 +1,8 @@
-import { userRegistionSchemaValidation, userLogInSchemaValidation } from "../Validation/user.validation.js";
+import { userRegistionSchemaValidation, userLoginSchemaValidation } from "../Validation/user.validation.js";
 import { findUserWithEmail, registerNewUserInDB } from "../Services/user.services.js";
 import { generateHashedPassword } from "../Utils/hashPassword.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 
 // register new user controller
@@ -71,8 +73,7 @@ const registerUser = async (req, res) => {
 
 // login user controller 
 const loginUser = async (req, res) => {
-
-    const validatedResult = await userLogInSchemaValidation.safeParseAsync(req.body);
+    const validatedResult = await userLoginSchemaValidation.safeParseAsync(req.body);
 
     if (validatedResult.error) {
 
@@ -82,22 +83,61 @@ const loginUser = async (req, res) => {
             errors: validatedResult.error.flatten().fieldErrors
         });
 
-        // validated results 
-        const { email, password } = validatedResult.data;
+    }
 
+    // validated results 
+    const { email, password } = validatedResult.data;
+
+
+
+    try {
         // the user info from db if exists
         const existingUser = await findUserWithEmail(email);
 
-        if (!existingUser) {
+        // verify the given password 
+        // even the user does not exists we perform the password compare to aviod the timing attack
+        const isPasswordCorrect = existingUser ? await bcrypt.compare(password, existingUser.password) : false;
+
+
+        if (!existingUser || !isPasswordCorrect) {
             return res.status(401).json({
                 success: false,
-                message: "User Must have to register first to login"
+                message: "Eamil or passowrd incorrect"
             });
         }
 
+        // if user exists and password is correct then create the access token using jwt and assign to user 
+        const accessToken = jwt.sign({
+            id: existingUser.id,
+            username: existingUser.username
+        },
+
+            process.env.JWT_ACCESS_TOKEN_SECRET,
+            {
+                expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY
+            }
+        );
 
 
 
+        // send response to to user the generated access token 
+        return res.status(200).json({
+            success: true,
+            message: "User logged in successfully.",
+            data: {
+                username: existingUser.username,
+                accessToken: accessToken
+            }
+        });
+
+
+    } catch (error) {
+
+        console.error("Error during login: ", error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error during user login",
+        });
     }
 
 };

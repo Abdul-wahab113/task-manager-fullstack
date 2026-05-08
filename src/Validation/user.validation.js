@@ -22,7 +22,7 @@ const userRegistionSchemaValidation = z.object({
 
 });
 
-export const userLoginSchemaValidation = z.object({
+const userLoginSchemaValidation = z.object({
     email: z.string()
         .trim()
         .lowercase()

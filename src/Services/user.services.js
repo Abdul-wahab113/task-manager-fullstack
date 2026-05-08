@@ -12,7 +12,7 @@ const findUserWithEmail = async function (email) {
     })
         .from(userTable)
         .where(eq(userTable.email, email));
-
+                
     return existingUser[0];
 };
 
