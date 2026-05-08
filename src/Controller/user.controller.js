@@ -1,6 +1,6 @@
 import { userRegistionSchemaValidation, userLoginSchemaValidation } from "../Validation/user.validation.js";
 import { findUserWithEmail, registerNewUserInDB } from "../Services/user.services.js";
-import { generateHashedPassword } from "../Utils/hashPassword.js";
+import { generateHashedPassword } from "../Utils/hashPassword.utils.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 

@@ -1,0 +1,56 @@
+import { validateToken } from "../Utils/token.utils";
+
+
+/**
+ * @param {import('express').Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ */
+
+const userAuthenticationMiddleware = (req, res, next) => {
+
+    const authHeader = req.get("Authorization");
+
+    if (!authHeader) {
+        return res.status(401).json({
+            success: false,
+            message: "Authorization header REQUIRED!"
+        });
+    }
+
+    if (!authHeader.startsWith("Bearer ")) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid Token Format (Correct => Bearer <Token>)"
+        });
+    }
+
+    // extract the incoming valid formated token in a variable
+    const recivedToken = authHeader.split(" ")[1];
+
+    const payload = validateToken(recivedToken);
+
+    if (!payload) {
+        return res.status(401).json({
+            success: false,
+            meassge: "Invalid Or Expired Token!"
+        });
+    }
+
+    req.validatedUser = payload;
+    next();
+};
+
+
+const ensureAuthentication = (req, res, next) => {
+
+    if (!req.validatedUser) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized User Please Login to access the resource"
+        });
+    }
+
+    // if the request is made by a verified user 
+    next();
+}
