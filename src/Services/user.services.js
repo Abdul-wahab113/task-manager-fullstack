@@ -8,6 +8,7 @@ const findUserWithEmail = async function (email) {
         id: userTable.id,
         username: userTable.username,
         email: userTable.email,
+        password: userTable.password
     })
         .from(userTable)
         .where(eq(userTable.email, email));
