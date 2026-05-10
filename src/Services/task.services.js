@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../DB/db.connection.js";
 import { tasksTable } from "../Models/index.js";
 
@@ -35,9 +35,23 @@ const getTasksByUserId = async function (userId) {
     return userTasks;
 };
 
+const deleteTaskById = async function (taskId, userId) {
+
+    const deletionresult = await db.delete(tasksTable).
+        where(
+            and(
+                eq(tasksTable.id, taskId),
+                eq(tasksTable.user_id, userId)
+            )).
+        returning({ id: tasksTable.id });
+
+    return deletionresult;
+
+};
 
 export {
     createNewTask,
-    getTasksByUserId
+    getTasksByUserId,
+    deleteTaskById
 }
 

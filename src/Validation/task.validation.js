@@ -20,7 +20,12 @@ const taskSchema = z.object({
         default("todo"),
 });
 
+const taskDeletionSchema = z.object({
+    taskId: z.string().
+        uuid("Invalid Task ID format")
+});
 
 export {
-    taskSchema
-}
+    taskSchema,
+    taskDeletionSchema
+};

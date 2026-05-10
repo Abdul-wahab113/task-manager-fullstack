@@ -14,7 +14,7 @@ const userAuthenticationMiddleware = (req, res, next) => {
     if (!authHeader) {
         return res.status(401).json({
             success: false,
-            message: "Authorization header REQUIRED!"
+            message: "Authorization header REQUIRED! Please Login first"
         });
     }
 
