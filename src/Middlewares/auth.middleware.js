@@ -1,4 +1,4 @@
-import { validateToken } from "../Utils/token.utils";
+import { validateToken } from "../Utils/token.utils.js";
 
 
 /**
@@ -33,7 +33,7 @@ const userAuthenticationMiddleware = (req, res, next) => {
     if (!payload) {
         return res.status(401).json({
             success: false,
-            meassge: "Invalid Or Expired Token!"
+            message: "Invalid Or Expired Token!"
         });
     }
 
@@ -53,4 +53,9 @@ const ensureAuthentication = (req, res, next) => {
 
     // if the request is made by a verified user 
     next();
+}
+
+export{
+    userAuthenticationMiddleware,
+    ensureAuthentication
 }
