@@ -1,5 +1,6 @@
 import { taskSchema } from "../Validation/task.validation.js";
-import { createNewTask } from "../Services/task.services.js";
+import { createNewTask, getTasksByUserId } from "../Services/task.services.js";
+import { success } from "zod";
 
 const createTask = async (req, res) => {
 
@@ -39,7 +40,33 @@ const createTask = async (req, res) => {
 
 }
 
+const getMyTasks = async (req, res) => {
+
+    const { id: user_Id } = req.validatedUser;
+
+    try {
+        // fetch all tasks of the current user that is requesting for it.
+        const tasks = await getTasksByUserId(user_Id);
+
+        res.status(200).json({
+            success: true,
+            message: "User's tasks are fetched successfully.",
+            count:tasks.length,
+            tasks: tasks
+        })
+
+
+    } catch (error) {
+        console.error("Error in fetching the user's tasks");
+        res.status(500).json({
+            success: false,
+            message: "Internal Sever Error"
+        });
+    }
+
+};
 
 export {
-    createTask
+    createTask,
+    getMyTasks
 }
