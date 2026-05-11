@@ -1,7 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../DB/db.connection.js";
 import { tasksTable } from "../Models/index.js";
-import { updateTask } from "../Controller/tasks.controller.js";
 
 const createNewTask = async function ({
     title,
@@ -29,16 +28,14 @@ const createNewTask = async function ({
 
 const getTasksByUserId = async function (userId) {
 
-    const userTasks = await db.select().
+    return await db.select().
         from(tasksTable).
         where(eq(tasksTable.user_id, userId));
-
-    return userTasks;
 };
 
 const deleteTaskById = async function (taskId, userId) {
 
-    const deletionresult = await db.delete(tasksTable).
+    const [deletionresult] = await db.delete(tasksTable).
         where(
             and(
                 eq(tasksTable.id, taskId),
@@ -47,7 +44,6 @@ const deleteTaskById = async function (taskId, userId) {
         returning({ id: tasksTable.id });
 
     return deletionresult;
-
 };
 
 const updateTaskById = async function (taskId, userId, updateData) {

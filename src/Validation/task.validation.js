@@ -21,7 +21,7 @@ const taskSchema = z.object({
     priority: z.enum(availablePriorityStatusEnum).
         default(PriorityEnum.MEDIUM),
 
-    status: z.enum(statusEnum.enumValues).
+    status: z.enum(availableTaskStatusEnum).
         default(TaskStatusEnum.TODO),
 });
 

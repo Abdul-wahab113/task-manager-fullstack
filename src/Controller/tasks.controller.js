@@ -13,7 +13,7 @@ import {
 
 import { ApiError } from "../Utils/api.error.utils.js";
 import { ApiResponse } from "../Utils/api.responses.utils.js";
-import { asyncHandler } from "../Utils/async.handler.utills.js";
+import { asyncHandler } from "../Utils/async.handler.utils.js";
 
 
 const createTask = asyncHandler(async (req, res) => {
@@ -82,7 +82,7 @@ const updateTask = asyncHandler(async (req, res) => {
     const validatedUpdateData = await updateTaskSchema.safeParseAsync(req.body);
 
     if (validatedUpdateData.error) {
-        throw new ApiError(400, "Validation Failed", dataValidation.error.flatten().fieldErrors);
+        throw new ApiError(400, "Validation Failed", validatedUpdateData.error.flatten().fieldErrors);
     };
 
 
@@ -97,7 +97,6 @@ const updateTask = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, updatedTask, "Task Updated Successfully"));
 });
-
 
 
 export {
