@@ -1,13 +1,12 @@
 import { ApiResponse } from "../Utils/api.responses.utils.js";
 import { asyncHandler } from "../Utils/async.handler.utils.js";
 
-
 const healthCheck = asyncHandler(async (req, res) => {
-    const response = new ApiResponse(200, { message: "Server is healty and running fine!" });
-
+    // Pass null or empty object for data, and the descriptive string as the message
     return res.status(200)
-        .json(response);
+        .json(new ApiResponse(200, {}, "Server is healthy and running fine!"));
 });
+
 
 export {
     healthCheck
