@@ -11,8 +11,9 @@ const findUserWithEmail = async function (email) {
         password: userTable.password
     })
         .from(userTable)
-        .where(eq(userTable.email, email));
-                
+        .where(eq(userTable.email, email))
+        .limit(1);
+
     return existingUser[0];
 };
 

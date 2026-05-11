@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { priorityEnum, statusEnum } from "../Models/index.js";
+import {
+    availablePriorityStatusEnum,
+    availableTaskStatusEnum,
+    PriorityEnum,
+    TaskStatusEnum
+} from "../Utils/constants.utils.js";
 
 
 const taskSchema = z.object({
@@ -13,11 +18,11 @@ const taskSchema = z.object({
         .max(1000, "Description is too long")
         .optional(),
 
-    priority: z.enum(priorityEnum.enumValues).
-        default("medium"),
+    priority: z.enum(availablePriorityStatusEnum).
+        default(PriorityEnum.MEDIUM),
 
     status: z.enum(statusEnum.enumValues).
-        default("todo"),
+        default(TaskStatusEnum.TODO),
 });
 
 const taskDeletionSchema = z.object({
@@ -33,8 +38,8 @@ const taskIdUpdateSchema = z.object({
 const updateTaskSchema = z.object({
     title: z.string().trim().min(1).optional(),
     description: z.string().trim().optional(),
-    priority: z.enum(["low", "medium", "high"]).optional(),
-    status: z.enum(["todo", "in_progress", "done"]).optional(),
+    priority: z.enum(availablePriorityStatusEnum).optional(),
+    status: z.enum(availableTaskStatusEnum).optional(),
 }).refine((data) => Object.keys(data).length > 0, {
     message: "You must provide at least one field to update",
 });
