@@ -25,7 +25,24 @@ const taskDeletionSchema = z.object({
         uuid("Invalid Task ID format")
 });
 
+const taskIdUpdateSchema = z.object({
+    taskId: z.string().
+        uuid("Invalid Task ID format")
+});
+
+const updateTaskSchema = z.object({
+    title: z.string().trim().min(1).optional(),
+    description: z.string().trim().optional(),
+    priority: z.enum(["low", "medium", "high"]).optional(),
+    status: z.enum(["todo", "in_progress", "done"]).optional(),
+}).refine((data) => Object.keys(data).length > 0, {
+    message: "You must provide at least one field to update",
+});
+
+
 export {
     taskSchema,
-    taskDeletionSchema
+    taskDeletionSchema,
+    taskIdUpdateSchema,
+    updateTaskSchema
 };

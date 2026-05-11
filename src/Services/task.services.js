@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../DB/db.connection.js";
 import { tasksTable } from "../Models/index.js";
+import { updateTask } from "../Controller/tasks.controller.js";
 
 const createNewTask = async function ({
     title,
@@ -49,9 +50,26 @@ const deleteTaskById = async function (taskId, userId) {
 
 };
 
+const updateTaskById = async function (taskId, userId, updateData) {
+
+    const [updatedTask] = await db.update(tasksTable).set({
+        ...updateData,
+        updatedAt: new Date()
+    }).where(
+        and(
+            eq(tasksTable.id, taskId),
+            eq(tasksTable.user_id, userId)
+        )
+    ).returning();
+
+    return updatedTask;
+};
+
+
 export {
     createNewTask,
     getTasksByUserId,
-    deleteTaskById
-}
+    deleteTaskById,
+    updateTaskById
+};
 

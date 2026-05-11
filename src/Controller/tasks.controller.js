@@ -1,5 +1,5 @@
-import { taskSchema, taskDeletionSchema } from "../Validation/task.validation.js";
-import { createNewTask, getTasksByUserId, deleteTaskById } from "../Services/task.services.js";
+import { taskSchema, taskDeletionSchema, taskIdUpdateSchema, updateTaskSchema } from "../Validation/task.validation.js";
+import { createNewTask, getTasksByUserId, deleteTaskById, updateTaskById } from "../Services/task.services.js";
 
 const createTask = async (req, res) => {
 
@@ -110,8 +110,68 @@ const deleteTask = async (req, res) => {
 
 };
 
+const updateTask = async (req, res) => {
+
+    const { id: userId } = req.validatedUser;
+    const { id: taskId } = req.params;
+
+    const validatedTaskId = await taskIdUpdateSchema.safeParseAsync({ taskId });
+
+    if (validatedTaskId.error) {
+
+        return res.status(400).json({
+            success: false,
+            message: "Invalid Task Id",
+            error: validatedTaskId.error.flatten().fieldErrors
+        });
+    };
+
+    const validatedUpdateData = await updateTaskSchema.safeParseAsync(req.body);
+
+    if (validatedUpdateData.error) {
+        return res.status(400).json({
+            success: false,
+            message: "Validation Failed",
+            error: validatedUpdateData.error.flatten().fieldErrors
+        });
+    };
+
+
+    try {
+
+        // db operation for task updation
+        const updatedTask = await updateTaskById(taskId, userId, validatedUpdateData.data);
+
+        if (!updatedTask) {
+            return res.status(404).json({
+                success: false,
+                message: "Task Not found or Access Denied",
+            });
+        };
+
+        return res.status(200).json({
+            success: true,
+            message: "Task Updated Successfully",
+            data: updatedTask
+        });
+
+
+    } catch (error) {
+
+        console.error("Error in Upating Task", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+
+
+
 export {
     createTask,
     getMyTasks,
-    deleteTask
-}
+    deleteTask,
+    updateTask
+};
