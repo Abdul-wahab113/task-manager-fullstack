@@ -13,7 +13,17 @@ const validateToken = function (recivedToken) {
     }
 };
 
+const createToken = function (payload) {
+
+    return jwt.sign(payload,
+        process.env.JWT_ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY
+        }
+    );
+};
 
 export {
-    validateToken
+    validateToken,
+    createToken
 }

@@ -1,6 +1,7 @@
 import { userRegistionSchemaValidation, userLoginSchemaValidation } from "../Validation/user.validation.js";
 import { findUserWithEmail, registerNewUserInDB } from "../Services/user.services.js";
 import { generateHashedPassword } from "../Utils/hashPassword.utils.js";
+import { createToken } from "../Utils/token.utils.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -107,18 +108,10 @@ const loginUser = async (req, res) => {
         }
 
         // if user exists and password is correct then create the access token using jwt and assign to user 
-        const accessToken = jwt.sign({
+        const accessToken = createToken({
             id: existingUser.id,
             username: existingUser.username
-        },
-
-            process.env.JWT_ACCESS_TOKEN_SECRET,
-            {
-                expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY
-            }
-        );
-
-
+        });
 
         // send response to to user the generated access token 
         return res.status(200).json({
