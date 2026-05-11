@@ -4,7 +4,7 @@ import "dotenv/config";
 import userRoutes from "./Routes/users.routes.js";
 import taskRoutes from "./Routes/tasks.routes.js";
 import { ApiError } from "./Utils/api.error.utils.js";
-import { healthCheck } from "./Controller/healthcheck.controller.js";
+import healthCheck from "./Routes/healthcheck.routes.js";
 
 const app = express();
 

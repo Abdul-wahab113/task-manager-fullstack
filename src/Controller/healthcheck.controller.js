@@ -8,7 +8,7 @@ const healthCheck = asyncHandler(async (req, res) => {
 });
 
 
-export {
+export  {
     healthCheck
 };
 
