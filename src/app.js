@@ -4,7 +4,7 @@ import "dotenv/config";
 import userRoutes from "./Routes/users.routes.js";
 import taskRoutes from "./Routes/tasks.routes.js";
 import { ApiError } from "./Utils/api.error.utils.js";
-
+import { healthCheck } from "./Controller/healthcheck.controller.js";
 
 const app = express();
 
@@ -30,7 +30,7 @@ app.use(cors({
 //routes
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/tasks", taskRoutes);
-
+app.use("/api/v1/health", healthCheck);
 
 
 // global error handler
