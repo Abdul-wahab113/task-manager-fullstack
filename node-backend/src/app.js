@@ -16,7 +16,11 @@ app.use(cookieParser());
 // restrict web pages from making requests to a different domain than the one that served the web page.
 app.use(cors({
     // allow the frontend to access the backend resources from this origin
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [
+        process.env.FRONTEND_URL,
+        "http://localhost:5173", 
+        "http://localhost:5174"
+    ].filter(Boolean),
 
     credentials: true,
     // allow the frontend to send cookies and auth headers with the request
