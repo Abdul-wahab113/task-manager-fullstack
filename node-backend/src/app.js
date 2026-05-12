@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
 import "dotenv/config";
 import userRoutes from "./Routes/users.routes.js";
 import taskRoutes from "./Routes/tasks.routes.js";
@@ -24,6 +25,24 @@ app.use(cors({
     // allow the frontend to send these headers in the request
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// Trust the reverse proxy if you deploy behind one (e.g. Render, Heroku)
+app.set("trust proxy", 1);
+
+// Global Rate Limiter
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 150, // Limit each IP to 150 requests per window
+    standardHeaders: true, 
+    legacyHeaders: false, 
+    message: {
+        success: false,
+        message: "Too many requests from this IP, please try again after 15 minutes"
+    }
+});
+
+// Apply the global rate limiting middleware to all requests
+app.use("/api", globalLimiter);
 
 // middleware
 app.use(express.json({ limit: "16kb" }));
