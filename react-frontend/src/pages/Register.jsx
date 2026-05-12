@@ -9,6 +9,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
@@ -17,6 +18,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     setIsLoading(true);
     
     try {
@@ -25,6 +27,9 @@ export default function Register() {
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       setError(err.message || 'Failed to create account.');
+      if (err.fieldErrors) {
+        setFieldErrors(err.fieldErrors);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -58,44 +63,56 @@ export default function Register() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="form-group mb-2">
             <label className="form-label" htmlFor="username">Username</label>
             <input
               type="text"
               id="username"
-              className="form-control"
+              className={`form-control ${fieldErrors.username ? 'is-invalid' : ''}`}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
               placeholder="johndoe"
+              style={fieldErrors.username ? { borderColor: 'var(--color-danger)' } : {}}
             />
+            {fieldErrors.username && (
+              <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                {fieldErrors.username[0]}
+              </div>
+            )}
           </div>
 
-          <div className="form-group">
+          <div className="form-group mb-2">
             <label className="form-label" htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
-              className="form-control"
+              className={`form-control ${fieldErrors.email ? 'is-invalid' : ''}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
+              style={fieldErrors.email ? { borderColor: 'var(--color-danger)' } : {}}
             />
+            {fieldErrors.email && (
+              <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                {fieldErrors.email[0]}
+              </div>
+            )}
           </div>
           
-          <div className="form-group mb-3">
+          <div className="form-group mb-4">
             <label className="form-label" htmlFor="password">Password</label>
             <div style={{ position: 'relative' }}>
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
-                className="form-control"
+                className={`form-control ${fieldErrors.password ? 'is-invalid' : ''}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                style={{ paddingRight: '2.5rem' }}
+                style={{ paddingRight: '2.5rem', ...(fieldErrors.password ? { borderColor: 'var(--color-danger)' } : {}) }}
               />
               <button
                 type="button"
@@ -117,6 +134,11 @@ export default function Register() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+            {fieldErrors.password && (
+              <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                {fieldErrors.password[0]}
+              </div>
+            )}
           </div>
 
           <button 
