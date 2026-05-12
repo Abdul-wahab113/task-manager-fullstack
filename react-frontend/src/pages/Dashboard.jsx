@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { taskService } from '../services/api';
 import TaskModal from '../components/TaskModal';
-import { Plus, LogOut, Trash2, Edit2, AlertCircle, Search } from 'lucide-react';
+import KanbanBoard from '../components/KanbanBoard';
+import { Plus, LogOut, Trash2, Edit2, AlertCircle, Search, LayoutGrid } from 'lucide-react';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -64,6 +65,20 @@ export default function Dashboard() {
   const openEditModal = (task) => {
     setEditingTask(task);
     setIsModalOpen(true);
+  };
+
+  const handleStatusChange = async (taskId, newStatus) => {
+    // Optimistic UI update for immediate feedback
+    const originalTasks = [...tasks];
+    setTasks(prevTasks => prevTasks.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+    
+    try {
+      await taskService.update(taskId, { status: newStatus });
+    } catch (err) {
+      // Revert on error
+      setTasks(originalTasks);
+      alert('Failed to update task status');
+    }
   };
 
   const getPriorityColor = (priority) => {
@@ -143,40 +158,12 @@ export default function Dashboard() {
           <p className="text-muted">We couldn't find any tasks matching "{searchQuery}".</p>
         </div>
       ) : (
-        <div className="tasks-grid">
-          {filteredTasks.map(task => (
-            <div key={task.id} className="glass-panel animate-fade-in" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
-              <div className="d-flex justify-between align-center mb-1">
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: getPriorityColor(task.priority), padding: '0.2rem 0.6rem', borderRadius: '1rem', backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                  {task.priority?.toUpperCase()}
-                </span>
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: getStatusColor(task.status) }}>
-                  {task.status?.replace('_', ' ').toUpperCase()}
-                </span>
-              </div>
-
-              <h3 style={{ margin: '0.5rem 0', wordBreak: 'break-word' }}>{task.title}</h3>
-
-              <p className="text-muted" style={{ fontSize: '0.9rem', flex: 1, marginBottom: '1.5rem', wordBreak: 'break-word' }}>
-                {task.description || 'No description provided.'}
-              </p>
-
-              <div className="d-flex justify-between align-center" style={{ paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                <span className="text-muted" style={{ fontSize: '0.8rem' }}>
-                  {new Date(task.createdAt).toLocaleDateString()}
-                </span>
-                <div className="d-flex" style={{ gap: '0.5rem' }}>
-                  <button className="btn-icon" onClick={() => openEditModal(task)} title="Edit">
-                    <Edit2 size={16} />
-                  </button>
-                  <button className="btn-icon" onClick={() => handleDelete(task.id)} style={{ color: 'var(--color-danger)' }} title="Delete">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <KanbanBoard 
+          tasks={filteredTasks} 
+          onEdit={openEditModal} 
+          onDelete={handleDelete} 
+          onStatusChange={handleStatusChange} 
+        />
       )}
 
       <TaskModal

@@ -7,7 +7,7 @@ import * as schema from "../Models/index.js";
 const pool = new pg.Pool({
     connectionString: process.env.DB_Connection_String,
     max: 10,
-    connectionTimeoutMillis: 2000, // Wait 2 seconds max
+    connectionTimeoutMillis: 10000, // Wait 10 seconds max for Neon cold starts
     idleTimeoutMillis: 30000,
 });
 
