@@ -1,0 +1,46 @@
+name: TaskManager CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    # --- Backend Steps ---
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install pnpm for Backend
+      run: npm install -g pnpm
+      
+    - name: Install Backend Dependencies
+      working-directory: ./node-backend
+      run: pnpm install --frozen-lockfile
+      
+    # --- Frontend Steps ---
+    - name: Install Frontend Dependencies
+      working-directory: ./react-frontend
+      run: npm ci
+      
+    - name: Build Frontend (Test Vite Build)
+      working-directory: ./react-frontend
+      run: npm run build
+      
+    # --- Docker Build Verification ---
+    - name: Verify Backend Docker Build
+      working-directory: ./node-backend
+      run: docker build -t taskmanager-backend .
+      
+    - name: Verify Frontend Docker Build
+      working-directory: ./react-frontend
+      run: docker build -t taskmanager-frontend .
