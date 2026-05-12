@@ -108,7 +108,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <div className="mb-4" style={{ position: 'relative' }}>
+      <div className="mb-4" style={{ position: 'relative', marginBottom: '2rem' }}>
         <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
         <input
           type="text"
