@@ -8,6 +8,12 @@
   <img src="https://img.shields.io/badge/PostgreSQL-Neon-336791?style=for-the-badge&logo=postgresql" alt="Postgres" />
   <img src="https://img.shields.io/badge/Docker-Multi--Stage-2496ED?style=for-the-badge&logo=docker" alt="Docker" />
   <img src="https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions" alt="Actions" />
+
+  <br /><br />
+
+  <a href="https://task-manager-fullstack-eight-chi.vercel.app" target="_blank">
+    <img src="https://img.shields.io/badge/🚀_Live_Demo-Click_Here-00C853?style=for-the-badge&logoColor=white" alt="Live Demo" />
+  </a>
 </div>
 
 <br />
