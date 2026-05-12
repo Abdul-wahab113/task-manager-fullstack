@@ -253,3 +253,67 @@ a:hover {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* ReactQuill Dark Mode Styling */
+.quill-dark .ql-toolbar {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+}
+
+.quill-dark .ql-toolbar button,
+.quill-dark .ql-toolbar .ql-picker {
+  color: var(--color-text);
+}
+
+.quill-dark .ql-toolbar button:hover,
+.quill-dark .ql-toolbar button.ql-active,
+.quill-dark .ql-toolbar .ql-picker-label:hover,
+.quill-dark .ql-toolbar .ql-picker-label.ql-active,
+.quill-dark .ql-toolbar .ql-picker-item:hover,
+.quill-dark .ql-toolbar .ql-picker-item.ql-selected {
+  color: var(--color-primary) !important;
+}
+
+.quill-dark .ql-stroke {
+  stroke: var(--color-text);
+}
+
+.quill-dark .ql-fill {
+  fill: var(--color-text);
+}
+
+.quill-dark .ql-active .ql-stroke,
+.quill-dark button:hover .ql-stroke {
+  stroke: var(--color-primary) !important;
+}
+
+.quill-dark .ql-active .ql-fill,
+.quill-dark button:hover .ql-fill {
+  fill: var(--color-primary) !important;
+}
+
+.quill-dark .ql-container {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.02);
+  min-height: 120px;
+}
+
+.quill-dark .ql-editor.ql-blank::before {
+  color: var(--color-text-muted);
+  font-style: normal;
+}
+
+.kanban-description p {
+  margin-bottom: 0.25rem;
+}
+
+.kanban-description ul, .kanban-description ol {
+  margin-left: 1rem;
+  margin-bottom: 0.25rem;
+}

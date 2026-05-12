@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('medium');
   const [status, setStatus] = useState('todo');
+  const [dueDate, setDueDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -15,11 +18,13 @@ export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
       setDescription(initialData.description || '');
       setPriority(initialData.priority || 'medium');
       setStatus(initialData.status || 'todo');
+      setDueDate(initialData.dueDate ? new Date(initialData.dueDate).toISOString().split('T')[0] : '');
     } else {
       setTitle('');
       setDescription('');
       setPriority('medium');
       setStatus('todo');
+      setDueDate('');
     }
   }, [initialData, isOpen]);
 
@@ -30,7 +35,11 @@ export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
     setIsLoading(true);
     setError(null);
     try {
-      await onSave({ title, description, priority, status });
+      const payload = { title, description, priority, status };
+      if (dueDate) {
+        payload.dueDate = new Date(dueDate).toISOString();
+      }
+      await onSave(payload);
       onClose();
     } catch (err) {
       if (err.fieldErrors) {
@@ -90,15 +99,13 @@ export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
             )}
           </div>
 
-          <div className="form-group">
+          <div className="form-group quill-dark">
             <label className="form-label" htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              className="form-control"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              placeholder="Add more details..."
+            <ReactQuill 
+              theme="snow" 
+              value={description} 
+              onChange={setDescription} 
+              placeholder="Add more details... (Supports bold, italics, lists, etc.)"
             />
             {error?.description && (
               <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
@@ -134,6 +141,17 @@ export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
                 <option value="in_progress">In Progress</option>
                 <option value="done">Done</option>
               </select>
+            </div>
+            
+            <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
+              <label className="form-label" htmlFor="dueDate">Due Date</label>
+              <input
+                type="date"
+                id="dueDate"
+                className="form-control"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
             </div>
           </div>
 

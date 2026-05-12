@@ -109,14 +109,23 @@ export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange })
                           </div>
                           
                           <h4 style={{ margin: '0.5rem 0 0.5rem 0', wordBreak: 'break-word', fontSize: '1.1rem' }}>{task.title}</h4>
-                          <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1.25rem', flex: 1, wordBreak: 'break-word' }}>
-                            {task.description || 'No description provided.'}
-                          </p>
+                          <div 
+                            className="text-muted kanban-description" 
+                            style={{ fontSize: '0.85rem', marginBottom: '1.25rem', flex: 1, wordBreak: 'break-word' }}
+                            dangerouslySetInnerHTML={{ __html: task.description || 'No description provided.' }}
+                          />
                           
                           <div className="d-flex justify-between align-center" style={{ paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                            <span className="text-muted" style={{ fontSize: '0.8rem' }}>
-                              {new Date(task.createdAt).toLocaleDateString()}
-                            </span>
+                            <div className="d-flex flex-column" style={{ gap: '0.2rem' }}>
+                              <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                                Created: {new Date(task.createdAt).toLocaleDateString()}
+                              </span>
+                              {task.dueDate && (
+                                <span style={{ fontSize: '0.75rem', color: new Date(task.dueDate) < new Date() ? 'var(--color-danger)' : 'var(--color-primary)' }}>
+                                  Due: {new Date(task.dueDate).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
                             <div className="d-flex" style={{ gap: '0.5rem' }}>
                               <button className="btn-icon" onClick={() => onEdit(task)} title="Edit" style={{ padding: '0.4rem' }}>
                                 <Edit2 size={16} />

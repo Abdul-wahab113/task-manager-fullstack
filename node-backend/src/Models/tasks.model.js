@@ -12,6 +12,7 @@ export const tasksTable = pgTable("tasks", {
     description: text("description"),
     priority: priorityEnum("priority").default(PriorityEnum.MEDIUM),
     status: statusEnum("status").default(TaskStatusEnum.TODO),
+    dueDate: timestamp("due_date"),
 
     user_id: uuid("user_id").notNull().references(() => userTable.id, { onDelete: "cascade" }),
 

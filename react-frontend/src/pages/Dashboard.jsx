@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { taskService } from '../services/api';
 import TaskModal from '../components/TaskModal';
 import KanbanBoard from '../components/KanbanBoard';
+import DashboardAnalytics from '../components/DashboardAnalytics';
 import { Plus, LogOut, Trash2, Edit2, AlertCircle, Search, LayoutGrid } from 'lucide-react';
 
 export default function Dashboard() {
@@ -116,7 +117,12 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="d-flex justify-between align-center mb-3 tasks-header">
+      {/* Analytics Overview */}
+      {!loading && !error && tasks.length > 0 && (
+        <DashboardAnalytics tasks={tasks} />
+      )}
+
+      <div className="d-flex justify-between align-center mb-3 tasks-header" style={{ marginTop: '2rem' }}>
         <h2>Your Tasks</h2>
         <button onClick={openNewTaskModal} className="btn btn-primary">
           <Plus size={18} /> New Task
