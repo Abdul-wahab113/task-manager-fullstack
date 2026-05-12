@@ -55,7 +55,7 @@ export default function Register() {
           <p className="text-muted">Create a new account.</p>
         </div>
 
-        {error && (
+        {error && Object.keys(fieldErrors).length === 0 && (
           <div className="d-flex align-center glass-panel mb-2" style={{ padding: '0.75rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}>
             <AlertCircle size={18} style={{ marginRight: '0.5rem' }} />
             <span style={{ fontSize: '0.9rem' }}>{error}</span>
@@ -77,7 +77,7 @@ export default function Register() {
             />
             {fieldErrors.username && (
               <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-                {fieldErrors.username[0]}
+                {Array.isArray(fieldErrors.username) ? fieldErrors.username[0] : fieldErrors.username}
               </div>
             )}
           </div>
@@ -96,7 +96,7 @@ export default function Register() {
             />
             {fieldErrors.email && (
               <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-                {fieldErrors.email[0]}
+                {Array.isArray(fieldErrors.email) ? fieldErrors.email[0] : fieldErrors.email}
               </div>
             )}
           </div>
@@ -136,7 +136,7 @@ export default function Register() {
             </div>
             {fieldErrors.password && (
               <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-                {fieldErrors.password[0]}
+                {Array.isArray(fieldErrors.password) ? fieldErrors.password[0] : fieldErrors.password}
               </div>
             )}
           </div>
