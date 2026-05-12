@@ -5,13 +5,13 @@ import { registerUser, loginUser, refreshAccessToken, logoutUser, forgotPassword
 const router = Router();
 
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 5 * 60 * 1000, // 5 minutes
     max: 10, // Limit each IP to 10 requests per window for auth routes
     standardHeaders: true,
     legacyHeaders: false,
     message: {
         success: false,
-        message: "Too many authentication attempts, please try again after 15 minutes"
+        message: "Too many authentication attempts, please try again after 5 minutes"
     }
 });
 
