@@ -10,7 +10,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
 
@@ -67,7 +67,7 @@ export default function Dashboard() {
   };
 
   const getPriorityColor = (priority) => {
-    switch(priority) {
+    switch (priority) {
       case 'high': return '#ef4444';
       case 'medium': return '#f59e0b';
       case 'low': return '#3b82f6';
@@ -76,7 +76,7 @@ export default function Dashboard() {
   };
 
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case 'done': return 'var(--color-primary)';
       case 'in_progress': return '#8b5cf6';
       default: return 'var(--color-text-muted)';
@@ -85,8 +85,8 @@ export default function Dashboard() {
 
   const filteredTasks = tasks.filter(task => {
     const query = searchQuery.toLowerCase();
-    return task.title.toLowerCase().includes(query) || 
-           task.description?.toLowerCase().includes(query);
+    return task.title.toLowerCase().includes(query) ||
+      task.description?.toLowerCase().includes(query);
   });
 
   return (
@@ -110,9 +110,9 @@ export default function Dashboard() {
 
       <div className="mb-4" style={{ position: 'relative' }}>
         <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-        <input 
-          type="text" 
-          placeholder="Search tasks by title or description..." 
+        <input
+          type="text"
+          placeholder="Search tasks by title or description..."
           className="form-control"
           style={{ paddingLeft: '2.5rem', width: '100%', maxWidth: '400px' }}
           value={searchQuery}
@@ -154,13 +154,13 @@ export default function Dashboard() {
                   {task.status?.replace('_', ' ').toUpperCase()}
                 </span>
               </div>
-              
+
               <h3 style={{ margin: '0.5rem 0', wordBreak: 'break-word' }}>{task.title}</h3>
-              
+
               <p className="text-muted" style={{ fontSize: '0.9rem', flex: 1, marginBottom: '1.5rem', wordBreak: 'break-word' }}>
                 {task.description || 'No description provided.'}
               </p>
-              
+
               <div className="d-flex justify-between align-center" style={{ paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                 <span className="text-muted" style={{ fontSize: '0.8rem' }}>
                   {new Date(task.createdAt).toLocaleDateString()}
@@ -179,9 +179,9 @@ export default function Dashboard() {
         </div>
       )}
 
-      <TaskModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSave={handleSaveTask}
         initialData={editingTask}
       />
