@@ -11,7 +11,7 @@ import {
     updateUserRefreshToken
 } from "../Services/user.services.js";
 
-import { db } from "../DB/index.js";
+import { db } from "../DB/db.connection.js";
 import { userTable } from "../Models/users.model.js";
 import { eq, and, gt } from "drizzle-orm";
 import { asyncHandler } from "../Utils/async.handler.utils.js";
@@ -136,13 +136,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     try {
         const decodedToken = jwt.verify(incomingRefreshToken, process.env.JWT_REFRESH_TOKEN_SECRET);
-        
+
         const user = await findUserById(decodedToken.id);
-        
+
         if (!user) {
             throw new ApiError(401, "Invalid refresh token");
         }
-        
+
         if (incomingRefreshToken !== user.refreshToken) {
             throw new ApiError(401, "Refresh token is expired or used");
         }
@@ -162,8 +162,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             .status(200)
             .cookie("refreshToken", newRefreshToken, options)
             .json(new ApiResponse(
-                200, 
-                { accessToken: newAccessToken }, 
+                200,
+                { accessToken: newAccessToken },
                 "Access token refreshed"
             ));
     } catch (error) {
@@ -197,13 +197,13 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
-    
+
     if (!email) {
         throw new ApiError(400, "Email is required");
     }
 
     const user = await db.select().from(userTable).where(eq(userTable.email, email));
-    
+
     if (!user || user.length === 0) {
         // Return 200 anyway to prevent email enumeration attacks
         return res.status(200).json(new ApiResponse(200, null, "If an account with that email exists, a reset link has been sent."));
@@ -212,7 +212,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     // Generate token
     const resetToken = crypto.randomBytes(32).toString("hex");
     const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    
+
     // Set expiry to 15 minutes from now
     const resetExpires = new Date(Date.now() + 15 * 60 * 1000);
 
@@ -236,7 +236,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
                 resetPasswordExpires: null
             })
             .where(eq(userTable.id, user[0].id));
-            
+
         console.error("Failed to send email:", error);
         throw new ApiError(500, "Failed to send reset email. Please try again later.");
     }
