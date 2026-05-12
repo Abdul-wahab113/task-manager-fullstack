@@ -1,6 +1,7 @@
 import {
     userRegistionSchemaValidation,
-    userLoginSchemaValidation
+    userLoginSchemaValidation,
+    resetPasswordSchemaValidation
 } from "../Validation/user.validation.js";
 
 import {
@@ -243,11 +244,13 @@ const forgotPassword = asyncHandler(async (req, res) => {
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
-    const { token, newPassword } = req.body;
+    const validationResult = await resetPasswordSchemaValidation.safeParseAsync(req.body);
 
-    if (!token || !newPassword) {
-        throw new ApiError(400, "Token and new password are required");
+    if (validationResult.error) {
+        throw new ApiError(400, "Validation Failed", validationResult.error.flatten().fieldErrors);
     }
+
+    const { token, newPassword } = validationResult.data;
 
     // Hash the token from the URL to compare with the one in DB
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");

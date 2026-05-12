@@ -12,6 +12,7 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,13 +32,10 @@ export default function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
 
     if (password !== confirmPassword) {
-      return setError('Passwords do not match');
-    }
-
-    if (password.length < 6) {
-      return setError('Password must be at least 6 characters');
+      return setFieldErrors({ newPassword: ['Passwords do not match'] });
     }
 
     setIsLoading(true);
@@ -52,12 +50,17 @@ export default function ResetPassword() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to reset password');
+        const err = new Error(data.message || 'Failed to reset password');
+        err.fieldErrors = data.errors;
+        throw err;
       }
 
       setSuccess(true);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to reset password');
+      if (err.fieldErrors) {
+        setFieldErrors(err.fieldErrors);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +87,7 @@ export default function ResetPassword() {
           <p className="text-muted">Please enter your new password below.</p>
         </div>
 
-        {error && (
+        {error && Object.keys(fieldErrors).length === 0 && (
           <div className="d-flex align-center glass-panel mb-2" style={{ padding: '0.75rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}>
             <AlertCircle size={18} style={{ marginRight: '0.5rem' }} />
             <span style={{ fontSize: '0.9rem' }}>{error}</span>
@@ -98,12 +101,12 @@ export default function ResetPassword() {
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
-                className="form-control"
+                className={`form-control ${fieldErrors.newPassword ? 'is-invalid' : ''}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                style={{ paddingRight: '2.5rem' }}
+                style={{ paddingRight: '2.5rem', ...(fieldErrors.newPassword ? { borderColor: 'var(--color-danger)' } : {}) }}
               />
               <button
                 type="button"
@@ -116,6 +119,11 @@ export default function ResetPassword() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+            {fieldErrors.newPassword && (
+              <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                {Array.isArray(fieldErrors.newPassword) ? fieldErrors.newPassword[0] : fieldErrors.newPassword}
+              </div>
+            )}
           </div>
 
           <div className="form-group mb-3">

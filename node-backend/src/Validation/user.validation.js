@@ -33,7 +33,18 @@ const userLoginSchemaValidation = z.object({
 
 
 
+const resetPasswordSchemaValidation = z.object({
+    token: z.string().min(1, "Token is required"),
+    newPassword: z.string()
+        .min(8, "Password must be 8 characters long")
+        .max(100, "Too long password")
+        .regex(/[A-Z]/, "Must contain one upper-case letter")
+        .regex(/[a-z]/, "Must contain one lower-case letter")
+        .regex(/[0-9]/, "Must contain a digit")
+});
+
 export {
     userRegistionSchemaValidation,
-    userLoginSchemaValidation
+    userLoginSchemaValidation,
+    resetPasswordSchemaValidation
 }
