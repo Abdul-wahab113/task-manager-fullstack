@@ -179,3 +179,57 @@ a:hover {
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
+
+/* Responsive Layout */
+.dashboard-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  padding: 1rem 2rem;
+}
+
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: center !important;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.5rem 1rem;
+  }
+  
+  .dashboard-header > div {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tasks-header {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem;
+  }
+  
+  .tasks-header h2 {
+    text-align: center;
+  }
+
+  .tasks-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-control {
+    max-width: 100% !important;
+  }
+}

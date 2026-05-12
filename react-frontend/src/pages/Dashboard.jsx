@@ -90,8 +90,8 @@ export default function Dashboard() {
   });
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <header className="d-flex justify-between align-center mb-3 glass-panel" style={{ padding: '1rem 2rem' }}>
+    <div className="dashboard-container">
+      <header className="d-flex justify-between align-center mb-3 glass-panel dashboard-header">
         <h1 className="text-primary" style={{ fontSize: '1.5rem', margin: 0 }}>Tasker</h1>
         <div className="d-flex align-center" style={{ gap: '1.5rem' }}>
           <span className="text-muted">Welcome, <strong className="text-primary">{user?.username}</strong></span>
@@ -101,7 +101,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="d-flex justify-between align-center mb-3">
+      <div className="d-flex justify-between align-center mb-3 tasks-header">
         <h2>Your Tasks</h2>
         <button onClick={openNewTaskModal} className="btn btn-primary">
           <Plus size={18} /> New Task
@@ -143,7 +143,7 @@ export default function Dashboard() {
           <p className="text-muted">We couldn't find any tasks matching "{searchQuery}".</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+        <div className="tasks-grid">
           {filteredTasks.map(task => (
             <div key={task.id} className="glass-panel animate-fade-in" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
               <div className="d-flex justify-between align-center mb-1">
