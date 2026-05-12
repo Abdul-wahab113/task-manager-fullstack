@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { taskService } from '../services/api';
 import TaskModal from '../components/TaskModal';
-import { Plus, LogOut, Trash2, Edit2, AlertCircle } from 'lucide-react';
+import { Plus, LogOut, Trash2, Edit2, AlertCircle, Search } from 'lucide-react';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const [tasks, setTasks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -82,6 +83,12 @@ export default function Dashboard() {
     }
   };
 
+  const filteredTasks = tasks.filter(task => {
+    const query = searchQuery.toLowerCase();
+    return task.title.toLowerCase().includes(query) || 
+           task.description?.toLowerCase().includes(query);
+  });
+
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <header className="d-flex justify-between align-center mb-3 glass-panel" style={{ padding: '1rem 2rem' }}>
@@ -101,6 +108,18 @@ export default function Dashboard() {
         </button>
       </div>
 
+      <div className="mb-4" style={{ position: 'relative' }}>
+        <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+        <input 
+          type="text" 
+          placeholder="Search tasks by title or description..." 
+          className="form-control"
+          style={{ paddingLeft: '2.5rem', width: '100%', maxWidth: '400px' }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       {error && (
         <div className="d-flex align-center glass-panel mb-3" style={{ padding: '1rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}>
           <AlertCircle size={20} style={{ marginRight: '0.5rem' }} />
@@ -118,9 +137,14 @@ export default function Dashboard() {
             <Plus size={18} /> Create Task
           </button>
         </div>
+      ) : filteredTasks.length === 0 ? (
+        <div className="glass-panel text-center" style={{ padding: '4rem 2rem' }}>
+          <h3 className="text-muted mb-1">No tasks found</h3>
+          <p className="text-muted">We couldn't find any tasks matching "{searchQuery}".</p>
+        </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          {tasks.map(task => (
+          {filteredTasks.map(task => (
             <div key={task.id} className="glass-panel animate-fade-in" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
               <div className="d-flex justify-between align-center mb-1">
                 <span style={{ fontSize: '0.8rem', fontWeight: 600, color: getPriorityColor(task.priority), padding: '0.2rem 0.6rem', borderRadius: '1rem', backgroundColor: 'rgba(255,255,255,0.05)' }}>
