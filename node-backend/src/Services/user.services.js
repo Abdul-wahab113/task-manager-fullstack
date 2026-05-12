@@ -37,7 +37,32 @@ const registerNewUserInDB = async function ({
 
 
 
+const findUserById = async function (id) {
+    const existingUser = await db.select()
+        .from(userTable)
+        .where(eq(userTable.id, id))
+        .limit(1);
+    return existingUser[0];
+};
+
+const findUserByRefreshToken = async function (token) {
+    const existingUser = await db.select()
+        .from(userTable)
+        .where(eq(userTable.refreshToken, token))
+        .limit(1);
+    return existingUser[0];
+};
+
+const updateUserRefreshToken = async function (userId, refreshToken) {
+    await db.update(userTable)
+        .set({ refreshToken })
+        .where(eq(userTable.id, userId));
+};
+
 export {
     findUserWithEmail,
-    registerNewUserInDB
+    registerNewUserInDB,
+    findUserById,
+    findUserByRefreshToken,
+    updateUserRefreshToken
 }

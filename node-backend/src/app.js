@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import "dotenv/config";
 import userRoutes from "./Routes/users.routes.js";
 import taskRoutes from "./Routes/tasks.routes.js";
@@ -7,25 +8,28 @@ import { ApiError } from "./Utils/api.error.utils.js";
 import healthCheck from "./Routes/healthcheck.routes.js";
 
 const app = express();
-
-// middleware
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // CORS Configuration
 // CORS (Cross-Origin Resource Sharing) is a security feature implemented by web browsers to 
 // restrict web pages from making requests to a different domain than the one that served the web page.
 app.use(cors({
     // allow the frontend to access the backend resources from this origin
-    origin: process.env.CORS_ORIGIN?.split(",") || "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
 
-    credential: true,
+    credentials: true,
     // allow the frontend to send cookies and auth headers with the request
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTION"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
     // allow the frontend to send these headers in the request
-    headers: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// middleware
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true }));
+
+
 
 //routes
 app.use("/api/v1/users", userRoutes);

@@ -23,7 +23,17 @@ const createToken = function (payload) {
     );
 };
 
+const createRefreshToken = function (payload) {
+    return jwt.sign(payload,
+        process.env.JWT_REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY
+        }
+    );
+};
+
 export {
     validateToken,
-    createToken
+    createToken,
+    createRefreshToken
 }
