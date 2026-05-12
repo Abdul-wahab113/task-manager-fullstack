@@ -1,5 +1,5 @@
 // This service handles all API calls
-const API_URL = 'http://localhost:8000/api/v1';
+export const API_URL = 'http://localhost:8000/api/v1';
 
 // Helper to get auth token
 const getToken = () => localStorage.getItem('token');

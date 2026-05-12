@@ -11,14 +11,19 @@ import {
     updateUserRefreshToken
 } from "../Services/user.services.js";
 
+import { db } from "../DB/index.js";
+import { userTable } from "../Models/users.model.js";
+import { eq, and, gt } from "drizzle-orm";
 import { asyncHandler } from "../Utils/async.handler.utils.js";
 import { ApiError } from "../Utils/api.error.utils.js";
 import { ApiResponse } from "../Utils/api.responses.utils.js";
 
 import { generateHashedPassword } from "../Utils/hashPassword.utils.js";
-import { createToken, createRefreshToken, validateToken } from "../Utils/token.utils.js";
+import { createToken, createRefreshToken } from "../Utils/token.utils.js";
+import { sendPasswordResetEmail } from "../Utils/email.utils.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 
 // register new user controller
@@ -190,10 +195,97 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "User logged out"));
 });
 
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    
+    if (!email) {
+        throw new ApiError(400, "Email is required");
+    }
+
+    const user = await db.select().from(userTable).where(eq(userTable.email, email));
+    
+    if (!user || user.length === 0) {
+        // Return 200 anyway to prevent email enumeration attacks
+        return res.status(200).json(new ApiResponse(200, null, "If an account with that email exists, a reset link has been sent."));
+    }
+
+    // Generate token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    
+    // Set expiry to 15 minutes from now
+    const resetExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+    // Save hashed token and expiry to DB
+    await db.update(userTable)
+        .set({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: resetExpires
+        })
+        .where(eq(userTable.id, user[0].id));
+
+    // Send email (we use the unhashed token in the email!)
+    try {
+        await sendPasswordResetEmail(user[0].email, resetToken);
+        return res.status(200).json(new ApiResponse(200, null, "If an account with that email exists, a reset link has been sent."));
+    } catch (error) {
+        // If email fails, clear the token from DB
+        await db.update(userTable)
+            .set({
+                resetPasswordToken: null,
+                resetPasswordExpires: null
+            })
+            .where(eq(userTable.id, user[0].id));
+            
+        console.error("Failed to send email:", error);
+        throw new ApiError(500, "Failed to send reset email. Please try again later.");
+    }
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        throw new ApiError(400, "Token and new password are required");
+    }
+
+    // Hash the token from the URL to compare with the one in DB
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // Find user with this token and ensure it hasn't expired
+    const user = await db.select().from(userTable)
+        .where(
+            and(
+                eq(userTable.resetPasswordToken, hashedToken),
+                gt(userTable.resetPasswordExpires, new Date())
+            )
+        );
+
+    if (!user || user.length === 0) {
+        throw new ApiError(400, "Invalid or expired password reset token");
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update user and clear reset token fields
+    await db.update(userTable)
+        .set({
+            password: hashedPassword,
+            resetPasswordToken: null,
+            resetPasswordExpires: null
+        })
+        .where(eq(userTable.id, user[0].id));
+
+    return res.status(200).json(new ApiResponse(200, null, "Password has been reset successfully. You can now login."));
+});
+
 
 export {
     registerUser,
     loginUser,
     refreshAccessToken,
-    logoutUser
+    logoutUser,
+    forgotPassword,
+    resetPassword
 }
