@@ -19,7 +19,7 @@ export default function Login() {
     
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/app');
     } catch (err) {
       setError(err.message || 'Failed to login. Please try again.');
     } finally {
