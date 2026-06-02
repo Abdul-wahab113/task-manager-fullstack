@@ -42,20 +42,6 @@ const userAuthenticationMiddleware = (req, res, next) => {
 };
 
 
-const ensureAuthentication = (req, res, next) => {
-
-    if (!req.validatedUser) {
-        return res.status(401).json({
-            success: false,
-            message: "Unauthorized User Please Login to access the resource"
-        });
-    }
-
-    // if the request is made by a verified user 
-    next();
-}
-
-export{
-    userAuthenticationMiddleware,
-    ensureAuthentication
+export {
+    userAuthenticationMiddleware
 }

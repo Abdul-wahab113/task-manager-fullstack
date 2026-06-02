@@ -1,5 +1,6 @@
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Edit2, Trash2 } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange }) {
   const columns = {
@@ -112,7 +113,7 @@ export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange })
                           <div 
                             className="text-muted kanban-description" 
                             style={{ fontSize: '0.85rem', marginBottom: '1.25rem', flex: 1, wordBreak: 'break-word' }}
-                            dangerouslySetInnerHTML={{ __html: task.description || 'No description provided.' }}
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(task.description || 'No description provided.') }}
                           />
                           
                           <div className="d-flex justify-between align-center" style={{ paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>

@@ -6,7 +6,8 @@ const createNewTask = async function ({
     title,
     description,
     priority,
-    status
+    status,
+    dueDate
 }, userId
 ) {
 
@@ -15,6 +16,7 @@ const createNewTask = async function ({
         description,
         priority,
         status,
+        dueDate,
         user_id: userId
     })
         .returning({

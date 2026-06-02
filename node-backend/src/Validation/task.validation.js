@@ -23,6 +23,8 @@ const taskSchema = z.object({
 
     status: z.enum(availableTaskStatusEnum).
         default(TaskStatusEnum.TODO),
+
+    dueDate: z.coerce.date().optional(),
 });
 
 const taskDeletionSchema = z.object({
@@ -40,6 +42,7 @@ const updateTaskSchema = z.object({
     description: z.string().trim().optional(),
     priority: z.enum(availablePriorityStatusEnum).optional(),
     status: z.enum(availableTaskStatusEnum).optional(),
+    dueDate: z.coerce.date().optional(),
 }).refine((data) => Object.keys(data).length > 0, {
     message: "You must provide at least one field to update",
 });

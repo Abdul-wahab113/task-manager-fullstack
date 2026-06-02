@@ -11,7 +11,8 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendPasswordResetEmail = async (email, resetToken) => {
-    const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
     const mailOptions = {
         from: '"Tasker Security" <noreply@tasker.com>',
