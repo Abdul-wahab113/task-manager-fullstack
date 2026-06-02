@@ -56,14 +56,17 @@ export default function ForgotPassword() {
     <div className="d-flex justify-center align-center" style={{ minHeight: '100vh', padding: '1rem' }}>
       <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
         <div className="text-center mb-3">
-          <h1 className="text-primary" style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Forgot Password</h1>
-          <p className="text-muted">Enter your email and we'll send you a reset link.</p>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>Forgot password</h1>
+          <p className="text-secondary">Enter your email and we'll send you a reset link.</p>
         </div>
 
         {error && (
-          <div className="d-flex align-center glass-panel mb-2" style={{ padding: '0.75rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}>
-            <AlertCircle size={18} style={{ marginRight: '0.5rem' }} />
-            <span style={{ fontSize: '0.9rem' }}>{error}</span>
+          <div
+            className="d-flex align-center mb-3"
+            style={{ padding: '0.7rem 0.875rem', background: 'var(--color-danger-soft)', color: 'var(--color-danger)', borderRadius: 'var(--radius-md)', gap: '0.5rem' }}
+          >
+            <AlertCircle size={16} />
+            <span style={{ fontSize: '0.85rem' }}>{error}</span>
           </div>
         )}
 

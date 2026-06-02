@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import LogoMark from '../components/LogoMark';
 import { UserPlus, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 export default function Register() {
@@ -38,10 +39,10 @@ export default function Register() {
   if (success) {
     return (
       <div className="d-flex justify-center align-center" style={{ minHeight: '100vh', padding: '1rem' }}>
-        <div className="glass-panel text-center animate-fade-in" style={{ width: '100%', maxWidth: '400px', padding: '3rem 2rem' }}>
-          <CheckCircle2 size={48} color="var(--color-primary)" style={{ margin: '0 auto 1rem auto' }} />
-          <h2>Account Created!</h2>
-          <p className="text-muted mt-1">Redirecting to login...</p>
+        <div className="surface-card text-center animate-fade-in" style={{ width: '100%', maxWidth: '400px', padding: '3rem 2rem' }}>
+          <CheckCircle2 size={44} color="var(--color-primary)" style={{ margin: '0 auto 1rem auto' }} />
+          <h2 style={{ fontSize: '1.3rem' }}>Account created</h2>
+          <p className="text-muted mt-1">Redirecting to login…</p>
         </div>
       </div>
     );
@@ -49,16 +50,21 @@ export default function Register() {
 
   return (
     <div className="d-flex justify-center align-center" style={{ minHeight: '100vh', padding: '1rem' }}>
-      <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
-        <div className="text-center mb-3">
-          <h1 className="text-primary" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Tasker</h1>
-          <p className="text-muted">Create a new account.</p>
+      <div className="surface-card animate-fade-in" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
+        <div className="d-flex flex-column align-center text-center mb-3" style={{ gap: '0.75rem' }}>
+          <Link to="/" className="app-logo" style={{ fontSize: '1.25rem' }}>
+            <LogoMark size={32} /> Tasker
+          </Link>
+          <p className="text-secondary" style={{ margin: 0 }}>Create your account to get started.</p>
         </div>
 
         {error && Object.keys(fieldErrors).length === 0 && (
-          <div className="d-flex align-center glass-panel mb-2" style={{ padding: '0.75rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}>
-            <AlertCircle size={18} style={{ marginRight: '0.5rem' }} />
-            <span style={{ fontSize: '0.9rem' }}>{error}</span>
+          <div
+            className="d-flex align-center mb-3"
+            style={{ padding: '0.7rem 0.875rem', background: 'var(--color-danger-soft)', color: 'var(--color-danger)', borderRadius: 'var(--radius-md)', gap: '0.5rem' }}
+          >
+            <AlertCircle size={16} />
+            <span style={{ fontSize: '0.85rem' }}>{error}</span>
           </div>
         )}
 

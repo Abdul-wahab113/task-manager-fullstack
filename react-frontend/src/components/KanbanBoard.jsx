@@ -1,42 +1,21 @@
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, Calendar, GripVertical } from 'lucide-react';
 import DOMPurify from 'dompurify';
+import { priorityMeta, statusMeta, STATUS_ORDER, initials } from '../lib/taskMeta';
 
-export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange }) {
-  const columns = {
-    todo: {
-      name: 'To Do',
-      items: tasks.filter(t => t.status === 'todo'),
-      color: '#3b82f6' // Blue
-    },
-    in_progress: {
-      name: 'In Progress',
-      items: tasks.filter(t => t.status === 'in_progress'),
-      color: '#f59e0b' // Yellow
-    },
-    done: {
-      name: 'Done',
-      items: tasks.filter(t => t.status === 'done'),
-      color: '#00ff66' // Green
-    }
-  };
+export default function KanbanBoard({ tasks, user, onEdit, onDelete, onStatusChange }) {
+  const userInitials = initials(user?.username || '');
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high': return '#ef4444';
-      case 'medium': return '#f59e0b';
-      case 'low': return '#3b82f6';
-      default: return 'var(--color-text-muted)';
-    }
-  };
+  const columns = STATUS_ORDER.map((status) => ({
+    id: status,
+    ...statusMeta(status),
+    items: tasks.filter((t) => t.status === status),
+  }));
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
-    
     const sourceStatus = result.source.droppableId;
     const destStatus = result.destination.droppableId;
-    
-    // Only trigger update if it was dropped in a different column
     if (sourceStatus !== destStatus) {
       onStatusChange(result.draggableId, destStatus);
     }
@@ -44,103 +23,257 @@ export default function KanbanBoard({ tasks, onEdit, onDelete, onStatusChange })
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div 
-        className="kanban-board custom-scrollbar" 
-        style={{ 
-          display: 'flex', 
-          gap: '1.5rem', 
-          overflowX: 'auto', 
-          paddingBottom: '1rem',
+      <div
+        className="kanban-board custom-scrollbar"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, minmax(300px, 1fr))',
+          gap: '1.25rem',
+          overflowX: 'auto',
+          paddingBottom: '0.5rem',
           minHeight: '60vh',
-          alignItems: 'flex-start'
+          alignItems: 'flex-start',
         }}
       >
-        {Object.entries(columns).map(([columnId, column]) => (
-          <div key={columnId} className="kanban-column" style={{ flex: '1', minWidth: '320px', display: 'flex', flexDirection: 'column' }}>
-            
-            {/* Column Header */}
-            <div className="d-flex align-center justify-between mb-3 glass-panel" style={{ padding: '1rem', borderTop: `4px solid ${column.color}` }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{column.name}</h3>
-              <span style={{ background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                {column.items.length}
-              </span>
+        {columns.map((column) => (
+          <div
+            key={column.id}
+            className="kanban-column"
+            style={{ display: 'flex', flexDirection: 'column', minWidth: '300px' }}
+          >
+            {/* Column header */}
+            <div
+              className="d-flex align-center justify-between"
+              style={{ padding: '0.25rem 0.5rem 0.875rem' }}
+            >
+              <div className="d-flex align-center" style={{ gap: '0.5rem' }}>
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: column.color,
+                  }}
+                />
+                <h3 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 500 }}>{column.label}</h3>
+                <span
+                  className="mono-label"
+                  style={{
+                    background: 'var(--color-surface-2)',
+                    padding: '0.1rem 0.45rem',
+                    borderRadius: '999px',
+                    fontSize: '0.7rem',
+                    color: 'var(--color-text-muted)',
+                  }}
+                >
+                  {column.items.length}
+                </span>
+              </div>
             </div>
 
-            {/* Droppable Area */}
-            <Droppable droppableId={columnId}>
+            {/* Droppable area */}
+            <Droppable droppableId={column.id}>
               {(provided, snapshot) => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   style={{
-                    background: snapshot.isDraggingOver ? 'rgba(255,255,255,0.03)' : 'transparent',
+                    background: snapshot.isDraggingOver
+                      ? 'var(--color-surface-2)'
+                      : 'transparent',
+                    border: `1px solid ${
+                      snapshot.isDraggingOver ? 'var(--color-border-strong)' : 'transparent'
+                    }`,
                     borderRadius: 'var(--radius-lg)',
-                    minHeight: '200px',
+                    minHeight: '120px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '1rem',
-                    transition: 'background 0.2s ease',
-                    padding: '0.5rem'
+                    gap: '0.75rem',
+                    transition: 'background 0.18s ease, border-color 0.18s ease',
+                    padding: '0.5rem',
                   }}
                 >
-                  {column.items.map((task, index) => (
-                    <Draggable key={task.id} draggableId={task.id} index={index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className="glass-panel"
-                          style={{
-                            ...provided.draggableProps.style,
-                            padding: '1.25rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            opacity: snapshot.isDragging ? 0.9 : 1,
-                            transform: snapshot.isDragging ? `${provided.draggableProps.style.transform} scale(1.02)` : provided.draggableProps.style.transform,
-                            cursor: 'grab',
-                            boxShadow: snapshot.isDragging ? '0 15px 30px rgba(0,0,0,0.5)' : 'var(--shadow-surface)',
-                            border: snapshot.isDragging ? `1px solid ${column.color}` : '1px solid rgba(255, 255, 255, 0.05)',
-                          }}
-                        >
-                          <div className="d-flex justify-between align-center mb-1">
-                            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: getPriorityColor(task.priority), padding: '0.2rem 0.6rem', borderRadius: '1rem', backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                              {task.priority?.toUpperCase()}
-                            </span>
-                          </div>
-                          
-                          <h4 style={{ margin: '0.5rem 0 0.5rem 0', wordBreak: 'break-word', fontSize: '1.1rem' }}>{task.title}</h4>
-                          <div 
-                            className="text-muted kanban-description" 
-                            style={{ fontSize: '0.85rem', marginBottom: '1.25rem', flex: 1, wordBreak: 'break-word' }}
-                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(task.description || 'No description provided.') }}
-                          />
-                          
-                          <div className="d-flex justify-between align-center" style={{ paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                            <div className="d-flex flex-column" style={{ gap: '0.2rem' }}>
-                              <span className="text-muted" style={{ fontSize: '0.75rem' }}>
-                                Created: {new Date(task.createdAt).toLocaleDateString()}
+                  {column.items.map((task, index) => {
+                    const pr = priorityMeta(task.priority);
+                    const overdue = task.dueDate && new Date(task.dueDate) < new Date();
+                    return (
+                      <Draggable key={task.id} draggableId={task.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="surface-card"
+                            style={{
+                              ...provided.draggableProps.style,
+                              padding: '0.875rem',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              cursor: 'grab',
+                              boxShadow: snapshot.isDragging
+                                ? 'var(--shadow-lg)'
+                                : 'var(--shadow-sm)',
+                              borderColor: snapshot.isDragging
+                                ? 'var(--color-border-strong)'
+                                : 'var(--color-border)',
+                            }}
+                          >
+                            {/* top row: priority pill + grip */}
+                            <div
+                              className="d-flex justify-between align-center"
+                              style={{ marginBottom: '0.5rem' }}
+                            >
+                              <span
+                                className="mono-label"
+                                style={{
+                                  color: pr.color,
+                                  background: pr.soft,
+                                  padding: '0.15rem 0.5rem',
+                                  borderRadius: 'var(--radius-sm)',
+                                  fontSize: '0.65rem',
+                                }}
+                              >
+                                {pr.label}
                               </span>
-                              {task.dueDate && (
-                                <span style={{ fontSize: '0.75rem', color: new Date(task.dueDate) < new Date() ? 'var(--color-danger)' : 'var(--color-primary)' }}>
-                                  Due: {new Date(task.dueDate).toLocaleDateString()}
-                                </span>
-                              )}
+                              <GripVertical
+                                size={15}
+                                style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}
+                              />
                             </div>
-                            <div className="d-flex" style={{ gap: '0.5rem' }}>
-                              <button className="btn-icon" onClick={() => onEdit(task)} title="Edit" style={{ padding: '0.4rem' }}>
-                                <Edit2 size={16} />
-                              </button>
-                              <button className="btn-icon" onClick={() => onDelete(task.id)} style={{ color: 'var(--color-danger)', padding: '0.4rem' }} title="Delete">
-                                <Trash2 size={16} />
-                              </button>
+
+                            <h4
+                              style={{
+                                margin: '0 0 0.4rem',
+                                wordBreak: 'break-word',
+                                fontSize: '0.95rem',
+                                fontWeight: 500,
+                                fontFamily: 'var(--font-sans)',
+                                lineHeight: 1.4,
+                              }}
+                            >
+                              {task.title}
+                            </h4>
+
+                            <div
+                              className="text-muted kanban-description"
+                              style={{
+                                fontSize: '0.8rem',
+                                color: 'var(--color-text-secondary)',
+                                marginBottom: '0.875rem',
+                                flex: 1,
+                                wordBreak: 'break-word',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                              dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                  task.description || 'No description provided.'
+                                ),
+                              }}
+                            />
+
+                            {/* footer */}
+                            <div
+                              className="d-flex justify-between align-center"
+                              style={{
+                                paddingTop: '0.75rem',
+                                borderTop: '1px solid var(--color-border)',
+                              }}
+                            >
+                              <div className="d-flex align-center" style={{ gap: '0.4rem' }}>
+                                <span
+                                  title={user?.username || 'You'}
+                                  style={{
+                                    width: 24,
+                                    height: 24,
+                                    borderRadius: '50%',
+                                    background: 'var(--color-primary)',
+                                    color: '#fff',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 500,
+                                    display: 'grid',
+                                    placeItems: 'center',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {userInitials}
+                                </span>
+                                {task.dueDate ? (
+                                  <span
+                                    className="d-inline-flex align-center"
+                                    style={{
+                                      gap: '0.3rem',
+                                      fontSize: '0.72rem',
+                                      color: overdue
+                                        ? 'var(--color-danger)'
+                                        : 'var(--color-text-muted)',
+                                    }}
+                                  >
+                                    <Calendar size={12} />
+                                    {new Date(task.dueDate).toLocaleDateString(undefined, {
+                                      month: 'short',
+                                      day: 'numeric',
+                                    })}
+                                  </span>
+                                ) : (
+                                  <span
+                                    style={{
+                                      fontSize: '0.72rem',
+                                      color: 'var(--color-text-muted)',
+                                    }}
+                                  >
+                                    No due date
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="d-flex" style={{ gap: '0.2rem' }}>
+                                <button
+                                  className="btn-icon"
+                                  onClick={() => onEdit(task)}
+                                  title="Edit"
+                                >
+                                  <Edit2 size={15} />
+                                </button>
+                                <button
+                                  className="btn-icon"
+                                  onClick={() => onDelete(task.id)}
+                                  title="Delete"
+                                  style={{ color: 'var(--color-text-muted)' }}
+                                  onMouseEnter={(e) =>
+                                    (e.currentTarget.style.color = 'var(--color-danger)')
+                                  }
+                                  onMouseLeave={(e) =>
+                                    (e.currentTarget.style.color = 'var(--color-text-muted)')
+                                  }
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                        )}
+                      </Draggable>
+                    );
+                  })}
                   {provided.placeholder}
+
+                  {column.items.length === 0 && !snapshot.isDraggingOver && (
+                    <div
+                      style={{
+                        border: '1px dashed var(--color-border-strong)',
+                        borderRadius: 'var(--radius-md)',
+                        padding: '1.5rem 1rem',
+                        textAlign: 'center',
+                        fontSize: '0.8rem',
+                        color: 'var(--color-text-muted)',
+                      }}
+                    >
+                      Drop tasks here
+                    </div>
+                  )}
                 </div>
               )}
             </Droppable>

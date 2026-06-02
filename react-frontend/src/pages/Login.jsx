@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import LogoMark from '../components/LogoMark';
 import { LogIn, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
@@ -29,16 +30,21 @@ export default function Login() {
 
   return (
     <div className="d-flex justify-center align-center" style={{ minHeight: '100vh', padding: '1rem' }}>
-      <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
-        <div className="text-center mb-3">
-          <h1 className="text-primary" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Tasker</h1>
-          <p className="text-muted">Welcome back! Please login to your account.</p>
+      <div className="surface-card animate-fade-in" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
+        <div className="d-flex flex-column align-center text-center mb-3" style={{ gap: '0.75rem' }}>
+          <Link to="/" className="app-logo" style={{ fontSize: '1.25rem' }}>
+            <LogoMark size={32} /> Tasker
+          </Link>
+          <p className="text-secondary" style={{ margin: 0 }}>Welcome back. Sign in to your account.</p>
         </div>
 
         {error && (
-          <div className="d-flex align-center glass-panel mb-2" style={{ padding: '0.75rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}>
-            <AlertCircle size={18} style={{ marginRight: '0.5rem' }} />
-            <span style={{ fontSize: '0.9rem' }}>{error}</span>
+          <div
+            className="d-flex align-center mb-3"
+            style={{ padding: '0.7rem 0.875rem', background: 'var(--color-danger-soft)', color: 'var(--color-danger)', borderRadius: 'var(--radius-md)', gap: '0.5rem' }}
+          >
+            <AlertCircle size={16} />
+            <span style={{ fontSize: '0.85rem' }}>{error}</span>
           </div>
         )}
 

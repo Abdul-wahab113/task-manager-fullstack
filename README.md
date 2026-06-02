@@ -31,7 +31,7 @@ This project was engineered from the ground up to demonstrate **enterprise-grade
 ## 🛠️ Tech Stack
 ### Frontend
 - **Framework:** React 19 + Vite
-- **UI/Styling:** Custom CSS Glassmorphism + Lucide Icons
+- **UI/Styling:** Custom flat design system (light theme, emerald accent) + Lucide Icons. Typography: Space Grotesk, Inter & JetBrains Mono.
 - **Features:** `@hello-pangea/dnd` (Drag and Drop), `react-quill-new` (Rich Text)
 - **Deployment:** Vercel
 
@@ -80,6 +80,7 @@ npm run dev        # Starts Vite server on port 5173
 ---
 
 ## 📸 Core Features
+* **Landing Page:** A clean, responsive marketing page with reveal-on-scroll animations and a live Kanban preview.
 * **Authentication:** Secure Registration, Login, and Logout flows.
 * **Kanban Board:** Visually track progress by dragging tasks across *To Do*, *In Progress*, and *Done* columns.
 * **Productivity Analytics:** Live visual progress bar tracking task completion percentages.

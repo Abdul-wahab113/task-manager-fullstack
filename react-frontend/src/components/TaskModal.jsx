@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -26,6 +26,7 @@ export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
       setStatus('todo');
       setDueDate('');
     }
+    setError(null);
   }, [initialData, isOpen]);
 
   if (!isOpen) return null;
@@ -53,34 +54,61 @@ export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.7)',
-      backdropFilter: 'blur(4px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '1rem'
-    }}>
-      <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '500px', padding: '2rem', position: 'relative' }}>
-        <button 
-          className="btn-icon" 
-          onClick={onClose}
-          style={{ position: 'absolute', top: '1rem', right: '1rem' }}
-        >
-          <X size={20} />
-        </button>
-        
-        <h2 className="mb-3">{initialData ? 'Edit Task' : 'New Task'}</h2>
-        
+    <div
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(24, 24, 27, 0.4)',
+        backdropFilter: 'blur(2px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '1rem',
+      }}
+    >
+      <div
+        className="surface-card animate-fade-in"
+        style={{
+          width: '100%',
+          maxWidth: '540px',
+          padding: '1.75rem',
+          position: 'relative',
+          boxShadow: 'var(--shadow-lg)',
+          maxHeight: '92vh',
+          overflowY: 'auto',
+        }}
+      >
+        <div className="d-flex justify-between align-center mb-3">
+          <div>
+            <div className="mono-label">{initialData ? 'Edit task' : 'New task'}</div>
+            <h2 style={{ margin: '0.15rem 0 0', fontSize: '1.3rem' }}>
+              {initialData ? 'Update details' : 'Create a task'}
+            </h2>
+          </div>
+          <button className="btn-icon" onClick={onClose} aria-label="Close">
+            <X size={18} />
+          </button>
+        </div>
+
         {typeof error === 'string' && (
-          <div className="d-flex align-center glass-panel mb-2" style={{ padding: '0.75rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}>
-            <span style={{ fontSize: '0.9rem' }}>{error}</span>
+          <div
+            className="d-flex align-center mb-3"
+            style={{
+              padding: '0.7rem 0.875rem',
+              background: 'var(--color-danger-soft)',
+              color: 'var(--color-danger)',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.85rem',
+              gap: '0.5rem',
+            }}
+          >
+            <AlertCircle size={16} />
+            <span>{error}</span>
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label" htmlFor="title">Title</label>
@@ -91,9 +119,10 @@ export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What needs to be done?"
+              autoFocus
             />
             {error?.title && (
-              <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+              <div style={{ color: 'var(--color-danger)', fontSize: '0.78rem', marginTop: '0.3rem' }}>
                 {error.title[0]}
               </div>
             )}
@@ -101,66 +130,57 @@ export default function TaskModal({ isOpen, onClose, onSave, initialData }) {
 
           <div className="form-group quill-dark">
             <label className="form-label" htmlFor="description">Description</label>
-            <ReactQuill 
-              theme="snow" 
-              value={description} 
-              onChange={setDescription} 
-              placeholder="Add more details... (Supports bold, italics, lists, etc.)"
+            <ReactQuill
+              theme="snow"
+              value={description}
+              onChange={setDescription}
+              placeholder="Add more details… (bold, italics, lists, links)"
             />
             {error?.description && (
-              <div style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+              <div style={{ color: 'var(--color-danger)', fontSize: '0.78rem', marginTop: '0.3rem' }}>
                 {error.description[0]}
               </div>
             )}
           </div>
-          
-          <div className="d-flex" style={{ gap: '1rem', marginBottom: '1.5rem' }}>
-            <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '0.875rem',
+              marginBottom: '1.75rem',
+            }}
+          >
+            <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label" htmlFor="priority">Priority</label>
-              <select
-                id="priority"
-                className="form-control"
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-              >
+              <select id="priority" className="form-control" value={priority} onChange={(e) => setPriority(e.target.value)}>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
               </select>
             </div>
-            
-            <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label" htmlFor="status">Status</label>
-              <select
-                id="status"
-                className="form-control"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
+              <select id="status" className="form-control" value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="todo">To Do</option>
                 <option value="in_progress">In Progress</option>
                 <option value="done">Done</option>
               </select>
             </div>
-            
-            <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
-              <label className="form-label" htmlFor="dueDate">Due Date</label>
-              <input
-                type="date"
-                id="dueDate"
-                className="form-control"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-              />
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label" htmlFor="dueDate">Due date</label>
+              <input type="date" id="dueDate" className="form-control" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
             </div>
           </div>
 
-          <div className="d-flex justify-between" style={{ marginTop: '2rem' }}>
+          <div className="d-flex justify-between" style={{ gap: '0.75rem' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary" disabled={isLoading}>
-              {isLoading ? 'Saving...' : 'Save Task'}
+              {isLoading ? 'Saving…' : initialData ? 'Save changes' : 'Create task'}
             </button>
           </div>
         </form>
