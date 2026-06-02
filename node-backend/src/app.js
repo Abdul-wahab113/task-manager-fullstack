@@ -12,15 +12,19 @@ const app = express();
 app.use(cookieParser());
 
 // CORS Configuration
-// CORS (Cross-Origin Resource Sharing) is a security feature implemented by web browsers to 
+// CORS (Cross-Origin Resource Sharing) is a security feature implemented by web browsers to
 // restrict web pages from making requests to a different domain than the one that served the web page.
+// Accept either FRONTEND_URL or CORS_ORIGIN (comma-separated values supported) plus localhost dev ports.
+const allowedOrigins = [
+    ...(process.env.FRONTEND_URL || "").split(","),
+    ...(process.env.CORS_ORIGIN || "").split(","),
+    "http://localhost:5173",
+    "http://localhost:5174",
+].map((o) => o.trim()).filter(Boolean);
+
 app.use(cors({
-    // allow the frontend to access the backend resources from this origin
-    origin: [
-        process.env.FRONTEND_URL,
-        "http://localhost:5173", 
-        "http://localhost:5174"
-    ].filter(Boolean),
+    // allow the frontend to access the backend resources from these origins
+    origin: allowedOrigins,
 
     credentials: true,
     // allow the frontend to send cookies and auth headers with the request
